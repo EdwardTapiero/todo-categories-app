@@ -83,4 +83,13 @@ export class RemoteConfigService {
       throw error;
     }
   }
+
+  getFeatureFlag(key: keyof FeatureFlags): any {
+    return this.featureFlagsSubject.value[key];
+  }
+
+  isFeatureEnabled(key: keyof FeatureFlags): boolean {
+    const value = this.getFeatureFlag(key);
+    return typeof value === 'boolean' ? value : false;
+  }
 }

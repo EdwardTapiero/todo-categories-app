@@ -15,12 +15,12 @@
   </ion-toolbar>
 
   <!-- Filtros de categoría - Controlado por Feature Flag -->
-  <ion-toolbar *ngIf="featureFlags.enableCategoryFilter">
+  <ion-toolbar *ngIf="isFeatureEnabled('enableCategoryFilter')">
     <ion-segment [(ngModel)]="selectedCategory" (ionChange)="filterTasks()">
       <ion-segment-button value="all">
         <ion-label>Todas</ion-label>
       </ion-segment-button>
-      <ion-segment-button *ngFor="let category of categories" [value]="category.id">
+      <ion-segment-button *ngFor="let category of categories; trackBy: trackByCategoryId" [value]="category.id">
         <ion-icon [name]="category.icon || 'folder'" [style.color]="category.color"></ion-icon>
         <ion-label>{{ category.name }}</ion-label>
       </ion-segment-button>
@@ -46,16 +46,16 @@
           <ion-label>Filtro de Categorías</ion-label>
           <ion-icon
             slot="end"
-            [name]="featureFlags.enableCategoryFilter ? 'checkmark-circle' : 'close-circle'"
-            [color]="featureFlags.enableCategoryFilter ? 'success' : 'danger'">
+            [name]="isFeatureEnabled('enableCategoryFilter') ? 'checkmark-circle' : 'close-circle'"
+            [color]="isFeatureEnabled('enableCategoryFilter') ? 'success' : 'danger'">
           </ion-icon>
         </ion-item>
         <ion-item color="primary">
           <ion-label>Descripción de Tareas</ion-label>
           <ion-icon
             slot="end"
-            [name]="featureFlags.enableTaskDescription ? 'checkmark-circle' : 'close-circle'"
-            [color]="featureFlags.enableTaskDescription ? 'success' : 'danger'">
+            [name]="isFeatureEnabled('enableTaskDescription') ? 'checkmark-circle' : 'close-circle'"
+            [color]="isFeatureEnabled('enableTaskDescription') ? 'success' : 'danger'">
           </ion-icon>
         </ion-item>
       </ion-list>
@@ -64,7 +64,7 @@
 
   <!-- Lista de tareas -->
   <ion-list>
-    <ion-item-sliding *ngFor="let task of filteredTasks">
+    <ion-item-sliding *ngFor="let task of filteredTasks; trackBy: trackByTaskId">
       <ion-item>
         <ion-checkbox
           slot="start"
@@ -75,7 +75,7 @@
         <ion-label [class.completed]="task.completed">
           <h2>{{ task.title }}</h2>
           <!-- Descripción solo visible si el feature flag está habilitado -->
-          <p *ngIf="task.description && featureFlags.enableTaskDescription">{{ task.description }}</p>
+          <p *ngIf="task.description && isFeatureEnabled('enableTaskDescription')">{{ task.description }}</p>
           <ion-badge *ngIf="task.categoryId" [style.background]="getCategoryColor(task.categoryId)">
             {{ getCategoryName(task.categoryId) }}
           </ion-badge>

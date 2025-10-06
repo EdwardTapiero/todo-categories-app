@@ -56,6 +56,23 @@ export class HomePage implements OnInit {
     });
   }
 
+  isFeatureEnabled(feature: keyof FeatureFlags): boolean {
+    return this.remoteConfigService.isFeatureEnabled(feature);
+  }
+
+  getFeatureFlag(feature: keyof FeatureFlags): any {
+    return this.remoteConfigService.getFeatureFlag(feature);
+  }
+
+  // Optimización: TrackBy para mejorar rendimiento en listas
+  trackByTaskId(index: number, task: Task): string {
+    return task.id;
+  }
+
+  trackByCategoryId(index: number, category: Category): string {
+    return category.id;
+  }
+
   loadData() {
     this.categories = this.storageService.getCategories();
     this.tasks = this.taskService.getTasks();
@@ -106,7 +123,7 @@ export class HomePage implements OnInit {
     ];
 
     // Solo mostrar campo de descripción si el feature flag está habilitado
-    if (this.featureFlags.enableTaskDescription) {
+    if (this.isFeatureEnabled('enableTaskDescription')) {
       inputs.push({
         name: 'description',
         type: 'textarea',
