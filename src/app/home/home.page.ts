@@ -4,6 +4,7 @@ import { Task } from '../models/task.model';
 import { Category } from '../models/category.model';
 import { TaskService } from '../services/task.service';
 import { StorageService } from '../services/storage.service';
+import { RemoteConfigService, FeatureFlags } from '../services/remote-config.service';
 import {FormsModule} from "@angular/forms";
 import {NgForOf, NgIf} from "@angular/common";
 import {CategoryManagerPage} from "../pages/category-manager/category-manager.page";
@@ -25,18 +26,33 @@ export class HomePage implements OnInit {
   categories: Category[] = [];
   selectedCategory: string = 'all';
 
+  // Feature Flags
+  featureFlags: FeatureFlags = {
+    enableCategoryFilter: true,
+    enableTaskDescription: true,
+  };
+
   constructor(
     private taskService: TaskService,
     private storageService: StorageService,
     private modalController: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private remoteConfigService: RemoteConfigService
   ) {}
 
   ngOnInit() {
     this.loadData();
+
+    // Suscribirse a los cambios de tareas
     this.taskService.tasks$.subscribe(tasks => {
       this.tasks = tasks;
       this.filterTasks();
+    });
+
+    // Suscribirse a los feature flags
+    this.remoteConfigService.featureFlags$.subscribe(flags => {
+      this.featureFlags = flags;
+      console.log('Feature Flags actualizados en Home:', flags);
     });
   }
 
@@ -81,20 +97,26 @@ export class HomePage implements OnInit {
   }
 
   async openAddTaskModal() {
+    const inputs: any[] = [
+      {
+        name: 'title',
+        type: 'text',
+        placeholder: 'Título de la tarea'
+      }
+    ];
+
+    // Solo mostrar campo de descripción si el feature flag está habilitado
+    if (this.featureFlags.enableTaskDescription) {
+      inputs.push({
+        name: 'description',
+        type: 'textarea',
+        placeholder: 'Descripción (opcional)'
+      });
+    }
+
     const alert = await this.alertController.create({
       header: 'Nueva Tarea',
-      inputs: [
-        {
-          name: 'title',
-          type: 'text',
-          placeholder: 'Título de la tarea'
-        },
-        {
-          name: 'description',
-          type: 'textarea',
-          placeholder: 'Descripción (opcional)'
-        }
-      ],
+      inputs: inputs,
       buttons: [
         {
           text: 'Cancelar',
@@ -104,7 +126,6 @@ export class HomePage implements OnInit {
           text: 'Siguiente',
           handler: (data) => {
             if (data.title && data.title.trim() !== '') {
-              // Cerrar este alert antes de abrir el siguiente
               setTimeout(() => {
                 this.selectCategory(data.title, data.description);
               }, 250);
@@ -152,13 +173,11 @@ export class HomePage implements OnInit {
         {
           text: 'Agregar',
           handler: (categoryId) => {
-            console.log('Agregando tarea:', { title, description, categoryId });
             this.taskService.addTask(
               title.trim(),
               description?.trim(),
               categoryId || undefined
             );
-            console.log('Tarea agregada');
             return true;
           }
         }
@@ -188,5 +207,34 @@ export class HomePage implements OnInit {
   getCategoryColor(categoryId: string): string {
     const category = this.categories.find(c => c.id === categoryId);
     return category ? category.color : '#cccccc';
+  }
+
+  // Método para refrescar la configuración manualmente
+  async refreshRemoteConfig() {
+    const loading = await this.alertController.create({
+      message: 'Actualizando configuración...',
+    });
+    await loading.present();
+
+    try {
+      await this.remoteConfigService.refreshConfig();
+      await loading.dismiss();
+
+      const alert = await this.alertController.create({
+        header: 'Éxito',
+        message: 'Configuración actualizada desde Firebase',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } catch (error) {
+      await loading.dismiss();
+
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'No se pudo actualizar la configuración',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
   }
 }
