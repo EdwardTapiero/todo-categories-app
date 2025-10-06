@@ -1,0 +1,133 @@
+.preview-section {
+  padding: 20px;
+  background: var(--ion-color-light);
+  margin-bottom: 16px;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--ion-color-medium);
+    font-weight: 600;
+  }
+}
+
+.preview-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-icon {
+    font-size: 64px;
+  }
+
+  ion-label {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.section {
+  padding: 20px;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--ion-color-medium);
+    font-weight: 600;
+  }
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.color-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--ion-color-light);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.selected {
+    background: var(--ion-color-primary-tint);
+    border: 2px solid var(--ion-color-primary);
+  }
+
+  .color-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+  }
+
+  ion-label {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .check-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 20px;
+  }
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.icon-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border-radius: 8px;
+  background: var(--ion-color-light);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.selected {
+    background: var(--ion-color-primary-tint);
+    border: 2px solid var(--ion-color-primary);
+  }
+
+  ion-label {
+    font-size: 12px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .check-icon {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 16px;
+  }
+}

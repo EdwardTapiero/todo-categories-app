@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title>{{ categoryName || 'Personalizar Categoría' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()" strong>Confirmar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Vista previa -->
+  <div class="preview-section">
+    <h3>Vista Previa</h3>
+    <div class="preview-card">
+      <ion-icon
+        [name]="selectedIcon"
+        [style.color]="selectedColor"
+        size="large">
+      </ion-icon>
+      <ion-label>{{ categoryName || 'Categoría' }}</ion-label>
+      <ion-chip [style.background]="selectedColor">
+        <ion-label style="color: white;">{{ selectedColor }}</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
+  <!-- Selector de Color -->
+  <div class="section">
+    <h3>Seleccionar Color</h3>
+    <div class="color-grid">
+      <div
+        *ngFor="let color of colors"
+        class="color-option"
+        [class.selected]="selectedColor === color.value"
+        (click)="selectColor(color.value)">
+        <div class="color-circle" [style.background]="color.value"></div>
+        <ion-label>{{ color.name }}</ion-label>
+        <ion-icon
+          *ngIf="selectedColor === color.value"
+          name="checkmark-circle"
+          color="primary"
+          class="check-icon">
+        </ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selector de Icono -->
+  <div class="section">
+    <h3>Seleccionar Icono</h3>
+    <div class="icon-grid">
+      <div
+        *ngFor="let icon of icons"
+        class="icon-option"
+        [class.selected]="selectedIcon === icon.value"
+        (click)="selectIcon(icon.value)">
+        <ion-icon
+          [name]="icon.value"
+          [style.color]="selectedColor"
+          size="large">
+        </ion-icon>
+        <ion-label>{{ icon.name }}</ion-label>
+        <ion-icon
+          *ngIf="selectedIcon === icon.value"
+          name="checkmark-circle"
+          color="primary"
+          class="check-icon">
+        </ion-icon>
+      </div>
+    </div>
+  </div>
+</ion-content>

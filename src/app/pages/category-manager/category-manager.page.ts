@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { Category } from '../../models/category.model';
 import { CategoryService } from '../../services/category.service';
+import {ColorIconSelectorComponent} from "../../componentes/color-icon-selector.component";
 
 @Component({
   selector: 'app-category-manager',
@@ -14,34 +15,6 @@ import { CategoryService } from '../../services/category.service';
 })
 export class CategoryManagerPage implements OnInit {
   categories: Category[] = [];
-
-  // Colores predefinidos
-  colors = [
-    '#3880ff', // blue
-    '#2dd36f', // green
-    '#ffc409', // yellow
-    '#eb445a', // red
-    '#9d4edd', // purple
-    '#f4a261', // orange
-    '#e63946', // crimson
-    '#06ffa5', // mint
-  ];
-
-  // Iconos predefinidos
-  icons = [
-    'person',
-    'briefcase',
-    'cart',
-    'home',
-    'fitness',
-    'book',
-    'restaurant',
-    'car',
-    'airplane',
-    'gift',
-    'heart',
-    'star'
-  ];
 
   constructor(
     private categoryService: CategoryService,
@@ -65,7 +38,8 @@ export class CategoryManagerPage implements OnInit {
   }
 
   async openAddCategoryModal() {
-    const alert = await this.alertController.create({
+    // Primero pedir el nombre
+    const nameAlert = await this.alertController.create({
       header: 'Nueva Categoría',
       inputs: [
         {
@@ -81,9 +55,9 @@ export class CategoryManagerPage implements OnInit {
         },
         {
           text: 'Siguiente',
-          handler: (data) => {
+          handler: async (data) => {
             if (data.name && data.name.trim() !== '') {
-              this.selectColorAndIcon(data.name);
+              await this.openColorIconSelector(data.name.trim());
               return true;
             }
             return false;
@@ -92,65 +66,38 @@ export class CategoryManagerPage implements OnInit {
       ]
     });
 
-    await alert.present();
+    await nameAlert.present();
   }
 
-  async selectColorAndIcon(name: string) {
-    const colorInputs = this.colors.map((color, index) => ({
-      name: 'color',
-      type: 'radio' as const,
-      label: `Color ${index + 1}`,
-      value: color,
-      checked: index === 0
-    }));
-
-    const colorAlert = await this.alertController.create({
-      header: 'Seleccionar Color',
-      inputs: colorInputs,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Siguiente',
-          handler: (color) => {
-            this.selectIcon(name, color);
-          }
-        }
-      ]
+  async openColorIconSelector(name: string, category?: Category) {
+    const modal = await this.modalController.create({
+      component: ColorIconSelectorComponent,
+      componentProps: {
+        categoryName: name,
+        selectedColor: category?.color || '#3880ff',
+        selectedIcon: category?.icon || 'folder'
+      }
     });
 
-    await colorAlert.present();
-  }
+    await modal.present();
 
-  async selectIcon(name: string, color: string) {
-    const iconInputs = this.icons.map((icon, index) => ({
-      name: 'icon',
-      type: 'radio' as const,
-      label: icon.charAt(0).toUpperCase() + icon.slice(1),
-      value: icon,
-      checked: index === 0
-    }));
+    const { data, role } = await modal.onWillDismiss();
 
-    const iconAlert = await this.alertController.create({
-      header: 'Seleccionar Icono',
-      inputs: iconInputs,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Crear',
-          handler: (icon) => {
-            this.categoryService.addCategory(name.trim(), color, icon);
-          }
-        }
-      ]
-    });
-
-    await iconAlert.present();
+    if (role === 'confirm' && data) {
+      if (category) {
+        // Actualizar categoría existente
+        const updatedCategory: Category = {
+          ...category,
+          name: name,
+          color: data.color,
+          icon: data.icon
+        };
+        this.categoryService.updateCategory(updatedCategory);
+      } else {
+        // Crear nueva categoría
+        this.categoryService.addCategory(name, data.color, data.icon);
+      }
+    }
   }
 
   async editCategory(category: Category) {
@@ -171,9 +118,9 @@ export class CategoryManagerPage implements OnInit {
         },
         {
           text: 'Siguiente',
-          handler: (data) => {
+          handler: async (data) => {
             if (data.name && data.name.trim() !== '') {
-              this.selectColorAndIconForEdit(category, data.name);
+              await this.openColorIconSelector(data.name.trim(), category);
               return true;
             }
             return false;
@@ -183,70 +130,6 @@ export class CategoryManagerPage implements OnInit {
     });
 
     await alert.present();
-  }
-
-  async selectColorAndIconForEdit(category: Category, newName: string) {
-    const colorInputs = this.colors.map(color => ({
-      name: 'color',
-      type: 'radio' as const,
-      label: color,
-      value: color,
-      checked: color === category.color
-    }));
-
-    const colorAlert = await this.alertController.create({
-      header: 'Seleccionar Color',
-      inputs: colorInputs,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Siguiente',
-          handler: (color) => {
-            this.selectIconForEdit(category, newName, color);
-          }
-        }
-      ]
-    });
-
-    await colorAlert.present();
-  }
-
-  async selectIconForEdit(category: Category, newName: string, newColor: string) {
-    const iconInputs = this.icons.map(icon => ({
-      name: 'icon',
-      type: 'radio' as const,
-      label: icon.charAt(0).toUpperCase() + icon.slice(1),
-      value: icon,
-      checked: icon === category.icon
-    }));
-
-    const iconAlert = await this.alertController.create({
-      header: 'Seleccionar Icono',
-      inputs: iconInputs,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Actualizar',
-          handler: (icon) => {
-            const updatedCategory: Category = {
-              ...category,
-              name: newName.trim(),
-              color: newColor,
-              icon: icon
-            };
-            this.categoryService.updateCategory(updatedCategory);
-          }
-        }
-      ]
-    });
-
-    await iconAlert.present();
   }
 
   async deleteCategory(categoryId: string) {

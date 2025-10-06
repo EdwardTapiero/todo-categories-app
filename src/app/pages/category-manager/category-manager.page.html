@@ -28,9 +28,8 @@
           <h2>{{ category.name }}</h2>
         </ion-label>
 
-        <ion-chip [style.background]="category.color">
-          <ion-label style="color: white;">{{ category.color }}</ion-label>
-        </ion-chip>
+        <!-- Círculo de color en lugar de chip con texto -->
+        <div class="color-indicator" [style.background]="category.color" slot="end"></div>
       </ion-item>
 
       <ion-item-options side="start">

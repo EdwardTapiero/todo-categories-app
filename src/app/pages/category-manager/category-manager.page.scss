@@ -27,3 +27,22 @@ ion-chip {
     color: white;
   }
 }
+
+// Estilos globales para los alerts personalizados
+:host ::ng-deep {
+  .color-picker-alert,
+  .icon-picker-alert {
+    .alert-radio-label {
+      white-space: normal !important;
+
+      sc-ion-label-ios, sc-ion-label-md {
+        white-space: normal !important;
+      }
+    }
+
+    .alert-radio-group {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+  }
+}
