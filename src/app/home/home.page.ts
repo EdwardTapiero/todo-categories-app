@@ -5,6 +5,7 @@ import { Category } from '../models/category.model';
 import { TaskService } from '../services/task.service';
 import { StorageService } from '../services/storage.service';
 import {FormsModule} from "@angular/forms";
+import {NgForOf, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,9 @@ import {FormsModule} from "@angular/forms";
   styleUrls: ['home.page.scss'],
   imports: [
     IonicModule,
-    FormsModule
+    FormsModule,
+    NgIf,
+    NgForOf
   ]
 })
 export class HomePage implements OnInit {
@@ -100,7 +103,10 @@ export class HomePage implements OnInit {
           text: 'Siguiente',
           handler: (data) => {
             if (data.title && data.title.trim() !== '') {
-              this.selectCategory(data.title, data.description);
+              // Cerrar este alert antes de abrir el siguiente
+              setTimeout(() => {
+                this.selectCategory(data.title, data.description);
+              }, 250);
               return true;
             }
             return false;
@@ -113,24 +119,30 @@ export class HomePage implements OnInit {
   }
 
   async selectCategory(title: string, description?: string) {
+    const inputs: any[] = [
+      {
+        name: 'categoryId',
+        type: 'radio',
+        label: 'Sin categoría',
+        value: '',
+        checked: true
+      }
+    ];
+
+    // Agregar categorías
+    this.categories.forEach(c => {
+      inputs.push({
+        name: 'categoryId',
+        type: 'radio',
+        label: c.name,
+        value: c.id,
+        checked: false
+      });
+    });
+
     const alert = await this.alertController.create({
       header: 'Seleccionar Categoría',
-      inputs: [
-        {
-          name: 'categoryId',
-          type: 'radio',
-          label: 'Sin categoría',
-          value: '',
-          checked: true
-        },
-        ...this.categories.map(c => ({
-          name: 'categoryId',
-          type: 'radio' as const,
-          label: c.name,
-          value: c.id,
-          checked: false
-        }))
-      ],
+      inputs: inputs,
       buttons: [
         {
           text: 'Cancelar',
@@ -139,11 +151,14 @@ export class HomePage implements OnInit {
         {
           text: 'Agregar',
           handler: (categoryId) => {
+            console.log('Agregando tarea:', { title, description, categoryId });
             this.taskService.addTask(
               title.trim(),
               description?.trim(),
               categoryId || undefined
             );
+            console.log('Tarea agregada');
+            return true;
           }
         }
       ]

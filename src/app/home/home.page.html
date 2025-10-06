@@ -37,7 +37,7 @@
       <ion-item>
         <ion-checkbox
           slot="start"
-          [(ngModel)]="task.completed"
+          [checked]="task.completed"
           (ionChange)="toggleTask(task.id)">
         </ion-checkbox>
 
@@ -52,7 +52,7 @@
 
       <ion-item-options side="end">
         <ion-item-option color="danger" (click)="deleteTask(task.id)">
-          <ion-icon name="trash" slot="icon-only"></ion-icon>
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
