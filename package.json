@@ -7,9 +7,18 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "cordova:prepare": "ionic cordova prepare",
+    "cordova:build:android": "ionic cordova build android --prod --release",
+    "cordova:build:ios": "ionic cordova build ios --prod --release",
+    "cordova:run:android": "ionic cordova run android",
+    "cordova:run:ios": "ionic cordova run ios",
+    "cordova:emulate:android": "ionic cordova emulate android",
+    "cordova:emulate:ios": "ionic cordova emulate ios",
+    "resources": "cordova-res ios --skip-config --copy && cordova-res android --skip-config --copy"
   },
   "private": true,
   "dependencies": {
@@ -49,6 +58,14 @@
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
+    "cordova-android": "^14.0.1",
+    "cordova-ios": "^7.1.1",
+    "cordova-plugin-device": "2.0.2",
+    "cordova-plugin-ionic-keyboard": "^2.0.5",
+    "cordova-plugin-ionic-webview": "^5.0.0",
+    "cordova-plugin-splashscreen": "5.0.2",
+    "cordova-plugin-statusbar": "^2.4.2",
+    "cordova-res": "^0.15.4",
     "eslint": "^9.16.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.1",
@@ -62,5 +79,18 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.0"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {}
+    },
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  }
 }

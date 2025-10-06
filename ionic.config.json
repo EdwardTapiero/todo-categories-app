@@ -1,5 +1,7 @@
 {
   "name": "todo-categories-app",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
