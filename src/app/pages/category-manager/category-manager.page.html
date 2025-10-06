@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Gestión de Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openAddCategoryModal()">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let category of categories">
+      <ion-item>
+        <ion-icon
+          [name]="category.icon || 'folder'"
+          [style.color]="category.color"
+          slot="start">
+        </ion-icon>
+
+        <ion-label>
+          <h2>{{ category.name }}</h2>
+        </ion-label>
+
+        <ion-chip [style.background]="category.color">
+          <ion-label style="color: white;">{{ category.color }}</ion-label>
+        </ion-chip>
+      </ion-item>
+
+      <ion-item-options side="start">
+        <ion-item-option color="primary" (click)="editCategory(category)">
+          <ion-icon slot="icon-only" name="create"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteCategory(category.id)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <div class="empty-state" *ngIf="categories.length === 0">
+    <ion-icon name="pricetags-outline" size="large"></ion-icon>
+    <p>No hay categorías</p>
+    <p class="subtitle">Agrega una nueva categoría</p>
+  </div>
+</ion-content>

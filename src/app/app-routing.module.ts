@@ -11,6 +11,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'category-manager',
+    loadChildren: () => import('./pages/category-manager/category-manager.module').then( m => m.CategoryManagerPageModule)
+  },
 ];
 
 @NgModule({

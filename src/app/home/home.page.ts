@@ -6,6 +6,7 @@ import { TaskService } from '../services/task.service';
 import { StorageService } from '../services/storage.service';
 import {FormsModule} from "@angular/forms";
 import {NgForOf, NgIf} from "@angular/common";
+import {CategoryManagerPage} from "../pages/category-manager/category-manager.page";
 
 @Component({
   selector: 'app-home',
@@ -168,8 +169,15 @@ export class HomePage implements OnInit {
   }
 
   async openCategoryManager() {
-    // Implementaremos esto en la siguiente rama
-    console.log('Abrir gestor de categorías');
+    const modal = await this.modalController.create({
+      component: CategoryManagerPage
+    });
+
+    await modal.present();
+
+    // Recargar categorías cuando se cierre el modal
+    await modal.onDidDismiss();
+    this.loadData();
   }
 
   getCategoryName(categoryId: string): string {
